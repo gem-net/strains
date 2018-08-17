@@ -11,6 +11,7 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'db.sqlite')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
+    APP_URL = os.environ.get('APP_URL')
 
     OAUTH_CREDENTIALS = {
         'google': {

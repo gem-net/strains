@@ -1,0 +1,10 @@
+Flask
+Flask-Login
+Flask-SQLAlchemy
+MarkupSafe
+SQLAlchemy
+argparse
+itsdangerous
+rauth
+requests
+bokeh

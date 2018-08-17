@@ -1,8 +1,12 @@
-from flask import Flask, redirect, url_for, render_template, flash, abort
+from flask import Flask, redirect, url_for, render_template, flash, abort, \
+    current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user,\
     current_user
 from datetime import datetime
+
+import bokeh.client as bk_client
+import bokeh.embed as bk_embed
 
 from .oauth import OAuthSignIn
 from .admin import get_members_dict
@@ -11,6 +15,8 @@ from .config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+
 
 db = SQLAlchemy(app)
 db.create_all()
@@ -66,14 +72,26 @@ def load_members_list():
         n_members = len(MEMBERS_DICT)
         msg = 'Members list updated. Currently {} members.'.format(n_members)
         flash(msg, 'success')
-        return render_template('index.html')
+        return render_template('reload.html')
     else:
         abort(404)
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # pull a new session from a running Bokeh server
+    url = current_app.config['APP_URL']
+    with bk_client.pull_session(url=url) as session:
+
+        # update or customize that session
+        # session.document.roots[0].children[
+        #     1].title.text = "Special Sliders For A Specific User!"
+
+        # generate a script to load the customized session
+        script = bk_embed.server_session(session_id=session.id, url=url)
+        # use the script in the rendered page
+        return render_template("index.html", script=script, template="Flask")
+
 
 
 @app.route('/logout')
