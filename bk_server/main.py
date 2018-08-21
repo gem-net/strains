@@ -204,8 +204,6 @@ def initialize_counts_fig(counts):
     return p, source_c, source_c_orig
 
 
-# def make_document(doc):
-
 df = load_df(load_gsheet=False)
 data_dict = {}
 update_data_dict(data_dict=data_dict, strains=df, write_orig=True)
@@ -243,7 +241,7 @@ Click in whitespace to undo the selection.</li>
 def update_sources(data_dict, update_orig=False):
     """Update strains data source, infer+update counts source."""
     current = data_dict['current']
-    new_dict = {col: current[col].replace('<blank>', '') 
+    new_dict = {col: list(current[col].replace('<blank>', ''))
                 for col in current.columns}
     source_s.data = new_dict
     # UPDATE COUNTS LIST FROM NEW STRAIN LIST
@@ -253,7 +251,7 @@ def update_sources(data_dict, update_orig=False):
     if update_orig:
         counts_x = [(i.categ, i.val) for ind, i in data_dict['pairs_df'].iterrows()]
         p_counts.x_range.factors = counts_x
-        source_c_orig = new_counts_dict.copy()
+        source_c_orig.data = new_counts_dict.copy()
 
 
 def refresh_data(data_dict):
