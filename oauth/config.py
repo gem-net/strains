@@ -12,6 +12,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
     APP_URL = os.environ.get('APP_URL')
+    SERVER_NAME = os.environ.get('SERVER_NAME')
 
     OAUTH_CREDENTIALS = {
         'google': {
