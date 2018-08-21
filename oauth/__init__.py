@@ -77,6 +77,7 @@ def load_members_list():
         abort(404)
 
 
+@app.route('/strains')
 @app.route('/')
 def index():
     # pull a new session from a running Bokeh server
