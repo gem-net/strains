@@ -8,3 +8,4 @@ itsdangerous
 rauth
 requests
 bokeh
+python-dotenv

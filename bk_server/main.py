@@ -1,6 +1,7 @@
 """bokeh serve try_server.py"""
 import os
 from collections import OrderedDict
+from dotenv import load_dotenv
 
 import pandas as pd
 import gspread
@@ -14,11 +15,11 @@ from bokeh.models.widgets import Button, DataTable, TableColumn, \
     HTMLTemplateFormatter
 from bokeh.layouts import row, widgetbox, column
 
-from .config import Config
 
-
-CREDS_JSON = Config.CREDS_JSON
-FEATHER_PATH = Config.FEATHER_PATH
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
+CREDS_JSON = os.environ.get('CREDS_JSON')
+FEATHER_PATH = os.environ.get('FEATHER_PATH') or 'df.feather'
 
 bar_bg_dict = {'color': 'whitesmoke', 'nonselection_color': 'whitesmoke', 
                'alpha': 0.9, 'nonselection_alpha': 0.9}  # #1f77b4
@@ -205,7 +206,6 @@ def initialize_counts_fig(counts):
 
 # def make_document(doc):
 
-curdoc().title = "Strains dashboard"
 df = load_df(load_gsheet=False)
 data_dict = {}
 update_data_dict(data_dict=data_dict, strains=df, write_orig=True)
@@ -297,11 +297,13 @@ full = column(widgetbox(text_div), p_counts, table_row, refresh_row,
 
 if __name__ != '__main__':
     # doc.add_root(full)
+    curdoc().title = "Strains dashboard"
     curdoc().add_root(full)
 
 else:
-    from bokeh.io import output_notebook, push_notebook
+    from bokeh.io import output_notebook
     output_notebook()
+
     def make_doc(doc):
         doc.add_root(full)
     nb = show(make_doc, notebook_handle=True)
