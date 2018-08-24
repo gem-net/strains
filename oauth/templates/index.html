@@ -1,17 +1,8 @@
-<!-- goes in title -->
-{% block title %}<h1>C-GEM strains list</h1>{% endblock %}
-
-<!-- goes in head -->
-{% block preamble %}
-<link href="app/static/css/custom.min.css" rel="stylesheet">
-{% endblock %}
-
 <!-- goes in body -->
-{% block contents %}
+{% extends "base.html" %}
 
-    {% for message in get_flashed_messages() %}
-        <p><b>Error</b>: {{ message }}</p>
-    {% endfor %}
+{% block app_content %}
+
     {% if current_user.is_authenticated %}
         {% if current_user.in_cgem %}
             <p>Welcome, {{ current_user.display_name }}. You should see the strains list below.</p>
@@ -20,9 +11,8 @@
                 have a different account associated with C-GEM?
                 Try logging out and back in again.</p>
         {% endif %}
-        <p><a href="{{ url_for('logout') }}">Logout</a></p>
     {% else %}
-        <p>To gain access, please log in below. </p>
+        <p>To gain access, please log in.</p>
 
         <p><a href="{{ url_for('oauth_authorize', provider='google') }}">Log in with Google</a></p>
 
@@ -30,9 +20,22 @@
             Our public database will launch shortly.</p>
     {% endif %}
 
-{% if current_user.is_authenticated and current_user.in_cgem %}
+    {% if current_user.is_authenticated and current_user.in_cgem %}
+
+    <form name="ship_form" id="ship-form" class="hidden"
+          action="{{ url_for('request_strain') }}"  method='POST'>
+    {% for field_name in col_names %}
+        <label>{{ field_name | indent(4) | safe}}:</label>
+        <input type="text" id="ship-{{ field_name }}" name="{{ field_name }}" value="fill_me">
+        <br/>
+    {% endfor %}
+    <br>
+    <button type="submit">Submit</button>
+
+    </form>
+
     {{ script|safe }}
-{% endif %}
+    {% endif %}
 
 
 {% endblock %}

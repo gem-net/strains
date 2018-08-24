@@ -1,8 +1,9 @@
 from flask import Flask, redirect, url_for, render_template, flash, abort, \
-    current_app
+    current_app, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user,\
-    current_user
+    current_user, login_required
+from flask_bootstrap import Bootstrap
 from datetime import datetime
 
 import bokeh.client as bk_client
@@ -10,16 +11,17 @@ import bokeh.embed as bk_embed
 
 from .oauth import OAuthSignIn
 from .admin import get_members_dict
-from .config import Config
+from .config import Config, table_cols
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-
-
 db = SQLAlchemy(app)
 db.create_all()
+
+bootstrap = Bootstrap()
+bootstrap.init_app(app)
 
 lm = LoginManager(app)
 lm.login_view = 'index'
@@ -91,7 +93,22 @@ def index():
         # generate a script to load the customized session
         script = bk_embed.server_session(session_id=session.id, url=url)
         # use the script in the rendered page
-        return render_template("index.html", script=script, template="Flask")
+        return render_template("index.html", script=script,
+                               col_names=[i for i in table_cols])
+
+
+
+@app.route('/request',  methods=['POST', 'GET'])
+@login_required
+def request_strain():
+    # pull a new session from a running Bokeh server
+
+
+    return render_template("basic.html", title='Strain Request',
+                           col_names=[i for i in table_cols],
+                           form=request.form)
+
+
 
 
 

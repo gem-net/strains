@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+
+
+<p>You've selected the following strain:</p>
+
+<table class="table table-condensed table-striped">
+
+    <thead><tr><th>Descriptor</th><th>Value</th></tr></thead>
+    <tbody>
+    {% for col in col_names %}
+        {% if form[col] %}
+        <tr>
+            <td>{{ col }}</td>
+            {% set val = form[col]%}
+            {% if col == 'benchling_url' %}
+                <td><a href="{{ val }}" target="_blank">{{ val }}</a></td>
+            {% else %}
+                <td>{{ val }}</td>
+            {% endif %}
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+
+
+</table>
+
+<form>
+    <button>Cancel</button>
+    <button type="submit">Submit request</button>
+</form>
+
+
+
+{% endblock %}

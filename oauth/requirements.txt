@@ -9,3 +9,5 @@ rauth
 requests
 bokeh
 python-dotenv
+google-api-python-client
+Flask-Bootstrap

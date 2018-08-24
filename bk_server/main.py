@@ -7,7 +7,7 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from bokeh.io import show
-from bokeh.models import ColumnDataSource, HoverTool, FactorRange, Div
+from bokeh.models import ColumnDataSource, HoverTool, FactorRange, Div, CustomJS
 from bokeh.plotting import figure, curdoc
 from bokeh.palettes import Spectral8
 from bokeh.transform import factor_cmap
@@ -285,6 +285,27 @@ source_c.on_change('selected', lambda attr, old, new: plot_select(data_dict))
 button_refresh.on_click(lambda: refresh_data(data_dict))
 update_sources(data_dict)
 
+source_s.selected.js_on_change('indices', CustomJS(
+    args=dict(source=source_s, col_names=list(table_cols)), code="""
+    temp_source = source;
+    console.log(cb_obj);
+    var inds = source.selected['1d']['indices'];
+    if (inds.length == 1){
+        /* update form with data from selected row */
+        var use_ind = inds[0]
+        var $form = document.getElementById('ship-form');
+        var el_dict = $form.getElementsByTagName('input');
+        for (var col_ind = 0; col_ind < col_names.length; col_ind++){
+            var var_name = col_names[col_ind];
+            el_dict[var_name].value = source.data[var_name][use_ind];
+        }
+        $form.submit()
+    }
+    else {
+        console.log('Multiple rows selected: ' + inds);
+    }
+    """))
+
 # LAYOUT
 table = widgetbox(data_table)
 table_row = row(table, sizing_mode="scale_width")  # (inputs, table)
@@ -297,6 +318,7 @@ if __name__ != '__main__':
     # doc.add_root(full)
     curdoc().title = "Strains dashboard"
     curdoc().add_root(full)
+    curdoc().template_variables["col_names"] = list(table_cols)
 
 else:
     from bokeh.io import output_notebook

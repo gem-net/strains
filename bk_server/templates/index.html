@@ -1,0 +1,26 @@
+{% extends base %}
+
+{% block contents %}
+
+    <form name="ship_form" id="ship-form" method='POST'>
+        {% for field_name in col_names %}
+            <label>{{ field_name | indent(4) | safe}}:</label>
+            <input type="text" id="ship-{{ field_name }}" name="{{ field_name }}" value="fill_me">
+            <br/>
+        {% endfor %}
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+
+    <div class="container body">
+
+    {% for doc in docs %}
+    {{ embed(doc) if doc.elementid }}
+    {% for root in doc.roots %}
+        {{ embed(root) | indent(10) }}
+    {% endfor %}
+    {% endfor %}
+
+    </div>
+{% endblock %}

@@ -1,8 +1,24 @@
 import os
 from dotenv import load_dotenv
+from collections import OrderedDict
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
+
+table_cols = OrderedDict([
+    ('lab', {'width': 70}),
+    ('entry', {'width': 38}),
+    ('organism', {'width': 60}),
+    ('strain', {'width': 80}),
+    ('plasmid', {'width': 165}),
+    ('marker1', {'width': 55}),
+    ('marker2', {'width': 55}),
+    ('origin', {'width': 55}),
+    ('origin2', {'width': 45}),
+    ('promoter', {'width': 60}),
+    ('benchling_url', {'width': 90}),
+    ('desc', {'width': 320}),
+    ('submitter', {'width': 70})])
 
 
 class Config(object):
