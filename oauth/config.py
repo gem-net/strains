@@ -23,9 +23,6 @@ table_cols = OrderedDict([
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'db.sqlite')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
     APP_URL = os.environ.get('APP_URL')
     SERVER_NAME = os.environ.get('SERVER_NAME')
@@ -36,3 +33,32 @@ class Config(object):
             'secret': os.environ.get('GOOGLE_SECRET')
         }
     }
+    DB_CNF = os.environ.get('DB_CNF')
+    DB_HOST = os.environ.get('DB_HOST')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # recycle connection before mysql default 8hr wait timeout
+    SQLALCHEMY_POOL_RECYCLE = int(
+        os.environ.get('SQLALCHEMY_POOL_RECYCLE', 3600))
+
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL_DEV') or \
+        'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+    DB_NAME = os.environ.get('DB_NAME_DEV')
+    SQLALCHEMY_ECHO = os.environ.get('SQLALCHEMY_ECHO') == 'True'
+
+
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+    DB_NAME = os.environ.get('DB_NAME')
+
+
+config = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+
+    'default': DevelopmentConfig
+}

@@ -11,3 +11,4 @@ bokeh
 python-dotenv
 google-api-python-client
 Flask-Bootstrap
+pymysql
