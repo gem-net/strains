@@ -1,6 +1,7 @@
 <!-- goes in body -->
 {% extends "base.html" %}
 
+{% import "bootstrap/wtf.html" as wtf %}
 {% block app_content %}
 
     {% if current_user.is_authenticated %}
@@ -21,20 +22,8 @@
     {% endif %}
 
     {% if current_user.is_authenticated and current_user.in_cgem %}
-
-    <form name="ship_form" id="ship-form" class="hidden"
-          action="{{ url_for('request_strain') }}"  method='POST'>
-    {% for field_name in col_names %}
-        <label>{{ field_name | indent(4) | safe}}:</label>
-        <input type="text" id="ship-{{ field_name }}" name="{{ field_name }}" value="fill_me">
-        <br/>
-    {% endfor %}
-    <br>
-    <button type="submit">Submit</button>
-
-    </form>
-
-    {{ script|safe }}
+        {{ wtf.quick_form(form, id="ship-form", extra_classes='hidden') }}
+        {{ script|safe }}
     {% endif %}
 
 

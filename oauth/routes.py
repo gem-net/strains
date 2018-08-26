@@ -1,15 +1,16 @@
-from flask import Flask, redirect, url_for, render_template, flash, abort, \
-    current_app, request
+from flask import redirect, url_for, render_template, flash, abort, \
+    current_app, request, session
 from flask_login import login_user, logout_user,\
     current_user, login_required
 import bokeh.client as bk_client
 import bokeh.embed as bk_embed
 
-from oauth import app, db, OAuthSignIn, MEMBERS_DICT
+from oauth import app, db, OAuthSignIn
 
 from .admin import get_members_dict
 from .config import table_cols
-from .models import User
+from .models import User, Strain
+from .forms import StrainForm, RequestForm
 
 
 @app.route('/reload')
@@ -25,34 +26,46 @@ def load_members_list():
         abort(404)
 
 
-@app.route('/strains')
-@app.route('/')
+@app.route('/strains', methods=['POST', 'GET'])
+@app.route('/',  methods=['POST', 'GET'])
 def index():
+    if not (current_user.is_authenticated and current_user.in_cgem):
+        return render_template("index.html", script=None, form=None)
+
+    form = StrainForm()  # prefix='ship-'
+    if form.validate_on_submit():
+        # remember strain object in session, redirect to order form
+        strain = [(col, getattr(form, col).data) for col in table_cols]
+        session['strain'] = strain
+        return redirect(url_for('request_strain'))
+
     # pull a new session from a running Bokeh server
     url = current_app.config['APP_URL']
-    with bk_client.pull_session(url=url) as session:
-
-        # update or customize that session
-        # session.document.roots[0].children[
-        #     1].title.text = "Special Sliders For A Specific User!"
-
+    with bk_client.pull_session(url=url) as bk_session:
         # generate a script to load the customized session
-        script = bk_embed.server_session(session_id=session.id, url=url)
+        script = bk_embed.server_session(session_id=bk_session.id, url=url)
         # use the script in the rendered page
-        return render_template("index.html", script=script,
-                               col_names=[i for i in table_cols])
-
+        return render_template("index.html", script=script, form=form)
 
 
 @app.route('/request',  methods=['POST', 'GET'])
 @login_required
 def request_strain():
-    # pull a new session from a running Bokeh server
+    if 'strain' not in session:
+        redirect(url_for('index'))
 
+    # SHIP REQUEST FORM
+    form = RequestForm()
+    if form.validate_on_submit():
+        strain = Strain(**dict(session['strain']))
+        session.pop('strain')
+        db.session.add(strain)
+        db.session.commit()
+        return redirect(url_for('index'))
 
     return render_template("basic.html", title='Strain Request',
-                           col_names=[i for i in table_cols],
-                           form=request.form)
+                           strain_data=session['strain'],
+                           form=form)
 
 
 @app.route('/logout')
