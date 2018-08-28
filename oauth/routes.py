@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+import pandas as pd
 from flask import redirect, url_for, render_template, flash, abort, \
     current_app, request, session
 from flask_login import login_user, logout_user,\
@@ -82,6 +85,32 @@ def request_strain():
     return render_template("basic.html", title='Strain Request',
                            strain_data=session['strain'],
                            form=form)
+
+
+@app.route('/requests')
+@login_required
+def list_requests():
+    requests = Request.query.order_by(Request.creation_time.desc()).all()
+    if not requests:
+        flash('There are currently no active requests.', 'error')
+        return redirect(url_for('index'))
+
+    rq_cols = ['id', 'strain_lab', 'strain_entry', 'creation_time', 'status']
+    strain_cols = ['organism', 'strain', 'plasmid']
+    requester_names = [i.requester.display_name for i in requests]
+    strains = [i.strain for i in requests]
+
+    od = OrderedDict()
+    for col in rq_cols:
+        od[col] = [getattr(i, col) for i in requests]
+    od['requester'] = requester_names
+    for col in strain_cols:
+        od[col] = [getattr(i, col) for i in strains]
+    df = pd.DataFrame(od)
+    df.insert(1, 'strain_id', df['strain_lab'] + '_' + df['strain_entry'])
+    df.drop(['strain_lab', 'strain_entry'], axis=1, inplace=True)
+    return render_template("requests.html", title='Current Requests',
+                           df=df)
 
 
 @app.route('/logout')
