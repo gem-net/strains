@@ -35,8 +35,13 @@ class StatusForm(FlaskForm):
                                   ('problem', 'Problem'),
                                   ('cancelled', 'Cancelled'),
                                   ])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Update status')
 
 
 class VolunteerForm(FlaskForm):
     submit = SubmitField('Volunteer')
+
+
+class CommentForm(FlaskForm):
+    content = TextAreaField('Add a comment', validators=[Length(min=2, max=255)])
+    submit = SubmitField('Post comment')

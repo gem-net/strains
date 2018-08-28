@@ -11,8 +11,9 @@ import bokeh.embed as bk_embed
 from oauth import app, db, OAuthSignIn, MEMBERS_DICT
 from .admin import get_members_dict
 from .config import table_cols
-from .models import User, Strain, Request
-from .forms import StrainForm, RequestForm, StatusForm, VolunteerForm
+from .models import User, Strain, Request, Comment
+from .forms import StrainForm, RequestForm, StatusForm, VolunteerForm, \
+    CommentForm
 
 
 @app.route('/reload')
@@ -155,10 +156,22 @@ def show_request(request_id):
         else:
             flash('Status unchanged: {}.'.format(new_status), 'message')
 
+    comment_form = CommentForm(prefix='comment-')
+    if comment_form.submit.data and comment_form.validate_on_submit():
+        comment = Comment()
+        comment.content = comment_form.content.data
+        comment.commenter = current_user
+        comment.request = rq
+        db.session.add(comment)
+        db.session.commit()
+        flash('Thanks for your comment!', 'message')
+
     return render_template("request_single.html", title='Current Requests',
                            meta=meta, rq=rq, strain_dict=strain_dict,
                            status_form=status_form,
-                           volunteer_form=volunteer_form)
+                           volunteer_form=volunteer_form,
+                           comment_form=comment_form,
+                           comments=rq.comments)
 
 
 @app.route('/logout')

@@ -70,11 +70,29 @@ class Request(db.Model):
                                 foreign_keys=[requester_id])
     shipper = db.relationship('User', backref='requests_handled',
                               foreign_keys=[shipper_id])
+    comments = db.relationship('Comment', back_populates='request',
+                               order_by="desc(Comment.creation_time)")
 
     def __repr__(self):
         return '<Request {}: {}_{}>'.format(self.requester.email,
                                             self.strain_lab,
                                             self.strain_entry)
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    request_id = db.Column(db.Integer, db.ForeignKey('requests.id'))
+    creation_time = db.Column(db.DateTime, default=datetime.utcnow)
+    content = db.Column(db.String(255))
+
+    commenter = db.relationship('User', backref='comments')
+    request = db.relationship('Request', back_populates='comments')
+
+    def __repr__(self):
+        return '<Comment {}: {}>'.format(self.id,
+                                         self.commenter.email)
 
 
 db.create_all()
