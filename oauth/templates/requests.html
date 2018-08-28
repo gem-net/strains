@@ -20,7 +20,9 @@
             {% for val in row %}
                 <td>{{ val }}</td>
             {% endfor %}
-                <td><button class="btn btn-default" type="button">Edit/Discuss</button></td>
+                <td><a class="btn btn-default"
+                       href="{{ url_for('show_request', request_id=row['id']) }}">
+                    Edit/Discuss</a></td>
             </tr>
         {% endfor %}
         </tbody>
