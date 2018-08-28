@@ -81,7 +81,7 @@ def request_strain():
         db.session.commit()
         flash('Success! Your strain request has been placed. '
               'You will receive confirmation by email.', 'message')
-        return redirect(url_for('index'))
+        return redirect(url_for('my_requests'))
 
     return render_template("basic.html", title='Strain Request',
                            strain_data=session['strain'],

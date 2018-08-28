@@ -18,10 +18,11 @@
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    {% if current_user.is_authenticated and current_user.in_cgem %}
                     <li><a href="{{ url_for('list_requests') }}">All Requests</a></li>
                     <li><a href="{{ url_for('my_requests') }}">My Requests</a></li>
                     <li><a href="{{ url_for('my_shipments') }}">My Shipments</a></li>
+                    {% endif %}
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">

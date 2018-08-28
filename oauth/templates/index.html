@@ -23,12 +23,14 @@
                 Try logging out and back in again.</p>
         {% endif %}
     {% else %}
-        <p>To gain access, please log in.</p>
-
-        <p><a href="{{ url_for('oauth_authorize', provider='google') }}">Log in with Google</a></p>
-
-        <p>If you're not affiliated with C-GEM, please come back soon.
+        <div style="display:flex; flex-direction:column; align-items:center;
+            min-height: 300px; justify-content:space-around">
+        <h1>Welcome to the C-GEM strains dashboard</h1>
+        <p style="text-align: center;">To gain access, please log in.<br/>
+        If you're not affiliated with C-GEM, please come back soon.
             Our public database will launch shortly.</p>
+        <p><a class="btn btn-primary btn-lg" href="{{ url_for('oauth_authorize', provider='google') }}">Log in with Google</a></p>
+        </div>
     {% endif %}
 
     {% if current_user.is_authenticated and current_user.in_cgem %}
