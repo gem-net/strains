@@ -2,9 +2,13 @@
 
 {% block app_content %}
 
-    <h1>Strain requests – complete list</h1>
-
-    <p>The table below shows all requests logged in the system.</p>
+    {% if categ == 'complete' %}
+        <h1>Strain requests – complete list</h1>
+        <p>The table below shows all requests logged in the system.</p>
+    {% else %}
+        <h1>Strains requests created by you</h1>
+        <p>The table below shows all requests you have created.</p>
+    {% endif %}
 
     <table class="table table-condensed table-striped">
 

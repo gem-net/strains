@@ -9,7 +9,7 @@ import bokeh.client as bk_client
 import bokeh.embed as bk_embed
 
 from oauth import app, db, OAuthSignIn, MEMBERS_DICT
-from .admin import get_members_dict
+from .admin import get_members_dict, get_requests_df
 from .config import table_cols
 from .models import User, Strain, Request, Comment
 from .forms import StrainForm, RequestForm, StatusForm, VolunteerForm, \
@@ -96,22 +96,24 @@ def list_requests():
         flash('There are currently no active requests.', 'error')
         return redirect(url_for('index'))
 
-    rq_cols = ['id', 'strain_lab', 'strain_entry', 'creation_time', 'status']
-    strain_cols = ['organism', 'strain', 'plasmid']
-    requester_names = [i.requester.display_name for i in requests]
-    strains = [i.strain for i in requests]
-
-    od = OrderedDict()
-    for col in rq_cols:
-        od[col] = [getattr(i, col) for i in requests]
-    od['requester'] = requester_names
-    for col in strain_cols:
-        od[col] = [getattr(i, col) for i in strains]
-    df = pd.DataFrame(od)
-    df.insert(1, 'strain_id', df['strain_lab'] + '_' + df['strain_entry'])
-    df.drop(['strain_lab', 'strain_entry'], axis=1, inplace=True)
+    df = get_requests_df(requests)
     return render_template("requests.html", title='Current Requests',
-                           df=df)
+                           df=df, categ="complete")
+
+
+@app.route('/my-requests')
+@login_required
+def my_requests():
+    requests = Request.query.filter(Request.requester == current_user).\
+            order_by(Request.creation_time.desc()).all()
+    if not requests:
+        flash('You do not have any active requests.', 'error')
+        return redirect(url_for('index'))
+
+    df = get_requests_df(requests)
+
+    return render_template("requests.html", title='Current Requests',
+                           df=df, categ="mine")
 
 
 @app.route('/request/<request_id>', methods=['POST', 'GET'])
