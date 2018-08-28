@@ -7,7 +7,6 @@ from flask_bootstrap import Bootstrap
 from datetime import datetime
 
 from .oauth import OAuthSignIn
-from .admin import get_members_dict
 from .config import config, table_cols
 
 
@@ -42,6 +41,7 @@ def before_request():
 
 @app.before_first_request
 def load_members_list():
+    from .admin import get_members_dict
     global MEMBERS_DICT
     MEMBERS_DICT = get_members_dict()
     print(MEMBERS_DICT)

@@ -40,6 +40,10 @@ class Config(object):
     SQLALCHEMY_POOL_RECYCLE = int(
         os.environ.get('SQLALCHEMY_POOL_RECYCLE', 3600))
 
+    SERVICE_ACCOUNT_FILE = os.environ.get('SERVICE_ACCOUNT_FILE')
+    GROUP_KEY = os.environ.get('GROUP_KEY')
+    SCOPES = ['https://www.googleapis.com/auth/admin.directory.group.member.readonly']
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
