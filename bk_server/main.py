@@ -223,18 +223,18 @@ data_table = DataTable(source=source_s, columns=columns, width=FIG_WIDTH)
 button_refresh = Button(label="Refresh data", button_type="warning")
 text_refresh = Div(text=get_refresh_msg())
 
-text_div = Div(text="""<h1>Strains Dashboard</h1>
-
-<ul>
-<li>Full data set in 
-<a href="https://docs.google.com/spreadsheets/d/1PRU1PgIIIDMZunnrHlncGT249vfheckuZxge0lVocf8/edit#gid=1804776083" target="_blank">
-Google Sheets</a>.</li>
-<li>Click on any bar below to filter the data table. Shift-click to select multiple attributes.
-Click in whitespace to undo the selection.</li>
-<li>Table columns are sortable. Click column headers to re-order.</li>
-</ul>
-
-""", width=FIG_WIDTH)
+# text_div = Div(text="""<h1>Strains Dashboard</h1>
+#
+# <ul>
+# <li>Full data set in
+# <a href="https://docs.google.com/spreadsheets/d/1PRU1PgIIIDMZunnrHlncGT249vfheckuZxge0lVocf8/edit#gid=1804776083" target="_blank">
+# Google Sheets</a>.</li>
+# <li>Click on any bar below to filter the data table. Shift-click to select multiple attributes.
+# Click in whitespace to undo the selection.</li>
+# <li>Table columns are sortable. Click column headers to re-order.</li>
+# </ul>
+#
+# """, width=FIG_WIDTH)
 
 # UPDATES
 
@@ -310,8 +310,8 @@ source_s.selected.js_on_change('indices', CustomJS(
 table = widgetbox(data_table)
 table_row = row(table, sizing_mode="scale_width")  # (inputs, table)
 refresh_row = row(button_refresh, text_refresh)
-full = column(widgetbox(text_div), p_counts, table_row, refresh_row,
-              sizing_mode="scale_width")
+full = column(p_counts, table_row, refresh_row,
+              sizing_mode="scale_width")  # widgetbox(text_div)
 
 
 if __name__ != '__main__':
