@@ -12,7 +12,7 @@ from oauth import app, db, OAuthSignIn, MEMBERS_DICT
 from .admin import get_members_dict
 from .config import table_cols
 from .models import User, Strain, Request
-from .forms import StrainForm, RequestForm
+from .forms import StrainForm, RequestForm, StatusForm, VolunteerForm
 
 
 @app.route('/reload')
@@ -111,6 +111,54 @@ def list_requests():
     df.drop(['strain_lab', 'strain_entry'], axis=1, inplace=True)
     return render_template("requests.html", title='Current Requests',
                            df=df)
+
+
+@app.route('/request/<request_id>', methods=['POST', 'GET'])
+@login_required
+def show_request(request_id):
+
+    rq = Request.query.filter_by(id=request_id).first_or_404()
+    strain = rq.strain
+    requester = rq.requester
+
+    meta = OrderedDict()
+    meta['Strain ID'] = strain.get_strain_id()
+    meta['Request Date'] = rq.creation_time
+    meta['Request By'] = requester.display_name
+    meta['Deliver To'] = rq.delivery_address
+
+    strain_dict = OrderedDict()
+    strain_cols = [i for i in table_cols if i not in ['lab', 'entry']]
+    for col in strain_cols:
+        strain_dict[col] = getattr(strain, col)
+
+    volunteer_form = VolunteerForm(prefix='volunteer-')
+    if volunteer_form.submit.data:
+        rq.shipper = current_user
+        rq.status = 'processing'
+        db.session.add(rq)
+        db.session.commit()
+        flash('Thanks for volunteering to handle this request!', 'message')
+        meta['Shipper'] = rq.shipper.display_name
+
+    # STATUS FOLLOWS VOLUNTEER FORM TO ALLOW STATUS UPDATE
+    status = rq.status if rq.status != 'unassigned' else 'processing'
+    status_form = StatusForm(prefix='status-', status=status)
+    if status_form.submit.data and status_form.validate_on_submit():
+        old_status = rq.status
+        new_status = status_form.status.data
+        if old_status != new_status:
+            rq.status = new_status
+            db.session.add(rq)
+            db.session.commit()
+            flash('Status changed to {}.'.format(new_status), 'message')
+        else:
+            flash('Status unchanged: {}.'.format(new_status), 'message')
+
+    return render_template("request_single.html", title='Current Requests',
+                           meta=meta, rq=rq, strain_dict=strain_dict,
+                           status_form=status_form,
+                           volunteer_form=volunteer_form)
 
 
 @app.route('/logout')

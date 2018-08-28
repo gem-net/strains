@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
+from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, Email
 
 
@@ -25,3 +25,18 @@ class RequestForm(FlaskForm):
     address = TextAreaField('Delivery address',
                             validators=[Length(min=0, max=144)])
     submit = SubmitField('Submit')
+
+
+class StatusForm(FlaskForm):
+    status = SelectField('Status',
+                         choices=[('processing', 'Processing'),
+                                  ('shipped', 'Shipped'),
+                                  ('received', 'Received'),
+                                  ('problem', 'Problem'),
+                                  ('cancelled', 'Cancelled'),
+                                  ])
+    submit = SubmitField('Submit')
+
+
+class VolunteerForm(FlaskForm):
+    submit = SubmitField('Volunteer')

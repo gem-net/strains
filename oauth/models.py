@@ -42,6 +42,9 @@ class Strain(db.Model):
     def __repr__(self):
         return '<Strain {}_{}:{}>'.format(self.lab, self.entry, self.plasmid)
 
+    def get_strain_id(self):
+        return '{}_{}'.format(self.lab, self.entry)
+
 
 class Request(db.Model):
     __tablename__ = 'requests'
