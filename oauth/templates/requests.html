@@ -5,9 +5,12 @@
     {% if categ == 'complete' %}
         <h1>Strain requests – complete list</h1>
         <p>The table below shows all requests logged in the system.</p>
-    {% else %}
-        <h1>Strains requests created by you</h1>
+    {% elif categ == 'my-requests' %}
+        <h1>Strain requests created by you</h1>
         <p>The table below shows all requests you have created.</p>
+    {% else %}
+        <h1>Strain shipments that you have volunteered to process</h1>
+        <p>The table below shows all requests for which you are responsible.</p>
     {% endif %}
 
     <table class="table table-condensed table-striped">

@@ -108,12 +108,27 @@ def my_requests():
             order_by(Request.creation_time.desc()).all()
     if not requests:
         flash('You do not have any active requests.', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('list_requests'))
 
     df = get_requests_df(requests)
 
-    return render_template("requests.html", title='Current Requests',
-                           df=df, categ="mine")
+    return render_template("requests.html", title='My Requests',
+                           df=df, categ="my-requests")
+
+
+@app.route('/my-shipments')
+@login_required
+def my_shipments():
+    requests = Request.query.filter(Request.shipper == current_user).\
+            order_by(Request.creation_time.desc()).all()
+    if not requests:
+        flash("You haven't volunteered for any shipments.", 'error')
+        return redirect(url_for('list_requests'))
+
+    df = get_requests_df(requests)
+
+    return render_template("requests.html", title='My Shipments',
+                           df=df, categ="my-shipments")
 
 
 @app.route('/request/<request_id>', methods=['POST', 'GET'])
