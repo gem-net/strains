@@ -3,10 +3,20 @@
 
 {% import "bootstrap/wtf.html" as wtf %}
 {% block app_content %}
-
     {% if current_user.is_authenticated %}
         {% if current_user.in_cgem %}
-            <p>Welcome, {{ current_user.display_name }}. You should see the strains list below.</p>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Welcome, {{ current_user.display_name }}. The strains dashboard will load below.</div>
+                <div class="panel-body">
+                <ul>
+                    <li>Click on any bar below to filter the data table. Shift-click to select multiple attributes.
+                        Click in whitespace to undo the selection.</li>
+                    <li>Table columns are sortable. Click column headers to re-order.</li>
+                    <li><strong><span class="text-danger">New!</span> Click on a strain to request delivery.</strong></li>
+                </ul>
+                </div>
+            </div>
         {% else %}
             <p>Unfortunately your ID hasn't been recognized. Maybe you
                 have a different account associated with C-GEM?

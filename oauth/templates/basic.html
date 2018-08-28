@@ -5,15 +5,20 @@
 
     <h1>Strain request form</h1>
 
+    <div class="panel panel-warning">
+        <div class="panel-body bg-warning">
+        Please confirm that you would like to request the strain below.
+            Fill out your email address, physical address for delivery, and click 'Submit'.
+        </div>
+    </div>
+
     <p>You've selected the following strain:</p>
 
     <table class="table table-condensed table-striped">
-
-        <thead><tr><th>Descriptor</th><th>Value</th></tr></thead>
         <tbody>
             {% for col, val in strain_data %}
             <tr>
-                <td>{{ col }}</td>
+                <th>{{ col }}</th>
                 {% if col == 'benchling_url' %}
                     <td><a href="{{ val }}" target="_blank">{{ val }}</a></td>
                 {% else %}

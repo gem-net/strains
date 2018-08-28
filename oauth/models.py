@@ -51,9 +51,10 @@ class Request(db.Model):
     strain_entry = db.Column(db.String(12), nullable=False)
     shipper_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     creation_time = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(64))
+    status = db.Column(db.String(64), default='unassigned')
     is_active = db.Column(db.Boolean, default=True)
     delivery_address = db.Column(db.String(255))
+    preferred_email = db.Column(db.String(64), nullable=True)
 
     __table_args__ = (
         db.ForeignKeyConstraint(

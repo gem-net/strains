@@ -5,11 +5,10 @@ from flask_login import login_user, logout_user,\
 import bokeh.client as bk_client
 import bokeh.embed as bk_embed
 
-from oauth import app, db, OAuthSignIn
-
+from oauth import app, db, OAuthSignIn, MEMBERS_DICT
 from .admin import get_members_dict
 from .config import table_cols
-from .models import User, Strain
+from .models import User, Strain, Request
 from .forms import StrainForm, RequestForm
 
 
@@ -20,7 +19,7 @@ def load_members_list():
         MEMBERS_DICT = get_members_dict()
         n_members = len(MEMBERS_DICT)
         msg = 'Members list updated. Currently {} members.'.format(n_members)
-        flash(msg, 'success')
+        flash(msg, 'message')
         return render_template('reload.html')
     else:
         abort(404)
@@ -52,15 +51,32 @@ def index():
 @login_required
 def request_strain():
     if 'strain' not in session:
-        redirect(url_for('index'))
+        flash('You must select a strain for request.', 'error')
+        return redirect(url_for('index'))
+
+    # PREV REQUEST?
+    prev = Request.query.filter(Request.requester == current_user).order_by(
+        Request.creation_time.desc()).first()
+    email = prev.preferred_email if prev else current_user.email
+    address = prev.delivery_address if prev else ''
 
     # SHIP REQUEST FORM
-    form = RequestForm()
+    form = RequestForm(email=email, address=address)
     if form.validate_on_submit():
-        strain = Strain(**dict(session['strain']))
-        session.pop('strain')
-        db.session.add(strain)
+        strain_dict = dict(session.pop('strain'))
+        strain = Strain.query.filter_by(lab=strain_dict['lab'],
+                                        entry=strain_dict['entry']).first()
+        if not strain:
+            strain = Strain(**strain_dict)
+        rq = Request()
+        rq.requester = current_user
+        rq.strain = strain
+        rq.delivery_address = form.address.data
+        rq.preferred_email = form.email.data
+        db.session.add(rq)
         db.session.commit()
+        flash('Success! Your strain request has been placed. '
+              'You will receive confirmation by email.', 'message')
         return redirect(url_for('index'))
 
     return render_template("basic.html", title='Strain Request',
@@ -84,6 +100,7 @@ def oauth_authorize(provider):
 
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
+    global MEMBERS_DICT
     if not current_user.is_anonymous:
         return redirect(url_for('index'))
     oauth_obj = OAuthSignIn.get_provider(provider)
