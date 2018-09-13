@@ -30,7 +30,7 @@ bar_bg_dict = {'color': 'whitesmoke', 'nonselection_color': 'whitesmoke',
 #     'line_color': '#1f77b4'}
 
 # select_cols = ['marker1', 'marker2', 'strain', 'origin', 'origin2', 'lab', 'submitter']  # organism
-LABS = ['Schepartz', 'Soll', 'Cate', 'Isaacs']
+LABS = ['Schepartz', 'Soll', 'Cate']  # TODO: remove hard-coded lab names
 PLOT_COLS = ['marker1', 'marker2', 'strain', 'origin', 'lab', 'submitter']  # organism, origin2
 LINK_COLS = 'benchling_url'
 LAB_COL = 'lab'
@@ -72,12 +72,8 @@ table_cols = OrderedDict([
     ('submitter', {'width': 70})])
 
 
-def load_df(load_gsheet=False):
-    """Load COMPLETE strains dataframe from Google Sheets."""
-    if os.path.exists(FEATHER_PATH) and not load_gsheet:
-        df = pd.read_feather(FEATHER_PATH)
-        df = df[[i for i in table_cols]]
-        return df
+def get_gsheet_dict():
+    """Get dictionary of sheet_name: sheet object."""
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -88,10 +84,20 @@ def load_df(load_gsheet=False):
     file = gc.open("C-GEM strains list")
     wsheets = file.worksheets()
     sheet_dict = OrderedDict([(i.title, i) for i in wsheets])
-    labs = [i for i in sheet_dict if i != 'Introduction']
+    return sheet_dict
+
+
+def load_df(load_gsheet=False):
+    """Load COMPLETE strains dataframe from Google Sheets or local file."""
+    if os.path.exists(FEATHER_PATH) and not load_gsheet:
+        df = pd.read_feather(FEATHER_PATH)
+        df = df[[i for i in table_cols]]
+        return df
+    # labs = [i for i in sheet_dict if i != 'Introduction']
+    sheet_dict = get_gsheet_dict()
     df_list = []
     # headers_lists = []
-    for lab in labs:
+    for lab in LABS:
         sheet = sheet_dict[lab]
         vals = sheet.get_all_records()
         # headers_lists.append(sheet.row_values(1))

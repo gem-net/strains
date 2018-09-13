@@ -1,6 +1,5 @@
 from collections import OrderedDict
 
-import pandas as pd
 from flask import redirect, url_for, render_template, flash, abort, \
     current_app, request, session
 from flask_login import login_user, logout_user,\
