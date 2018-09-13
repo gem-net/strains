@@ -1,0 +1,8 @@
+{% extends 'email/email_base.html' %}
+
+{% block content %}
+Good news! {{ rq.shipper.display_name }} has volunteered to handle your request for plasmid ID {{ rq.strain.plasmid }}.
+
+To discuss or otherwise act on this request, please go to the following URL:
+{{ rq.url }}
+{% endblock %}

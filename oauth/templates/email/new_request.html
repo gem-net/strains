@@ -1,0 +1,11 @@
+{% extends 'email/email_base.html' %}
+
+{% block content %}
+<p>Dear {{ rq.strain_lab}} lab member,</p>
+
+<p>You have received a new request for plasmid ID {{ rq.strain.plasmid }}
+    from {{ rq.requester.display_name }}.</p>
+
+<p>Please go to <a href="{{ rq.url }}" target="_blank">{{ rq.url }}</a>
+    to handle this request.</p>
+{% endblock %}

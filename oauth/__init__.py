@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
+from flask_mail import Mail
 from datetime import datetime
 
 from .oauth import OAuthSignIn
@@ -20,6 +21,9 @@ bootstrap.init_app(app)
 
 lm = LoginManager(app)
 lm.login_view = 'index'
+
+mail = Mail()
+mail.init_app(app)
 
 MEMBERS_DICT = {}
 
@@ -40,11 +44,13 @@ def before_request():
 
 
 @app.before_first_request
-def load_members_list():
+def update_members_and_emails():
     from .admin import get_members_dict
-    global MEMBERS_DICT
-    MEMBERS_DICT = get_members_dict()
-    print(MEMBERS_DICT)
+    MEMBERS_DICT.clear()
+    new_dict = get_members_dict()
+    MEMBERS_DICT.update(new_dict)
+    from .email import load_lab_emails
+    load_lab_emails()
 
 
 from oauth import models

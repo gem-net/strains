@@ -1,0 +1,8 @@
+{% extends 'email/email_base.html' %}
+
+{% block content %}
+    <p>Good news! {{ rq.shipper.display_name }} has volunteered to handle <a href="{{ rq.url }}" target="_blank">your request</a> for plasmid ID {{ rq.strain.plasmid }}.</p>
+
+    <p>Please go to <a href="{{ rq.url }}" target="_blank">{{ rq.url }}</a>
+    to discuss or otherwise act on this request.</p>
+{% endblock %}

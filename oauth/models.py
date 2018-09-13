@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from flask import url_for
 from flask_login import UserMixin
 
 from oauth import db, lm
@@ -72,6 +73,10 @@ class Request(db.Model):
                               foreign_keys=[shipper_id])
     comments = db.relationship('Comment', back_populates='request',
                                order_by="desc(Comment.creation_time)")
+
+    @property
+    def url(self):
+        return url_for('show_request', request_id=self.id, _external=True)
 
     def __repr__(self):
         return '<Request {}: {}_{}>'.format(self.requester.email,

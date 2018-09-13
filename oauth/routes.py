@@ -8,21 +8,22 @@ from flask_login import login_user, logout_user,\
 import bokeh.client as bk_client
 import bokeh.embed as bk_embed
 
-from oauth import app, db, OAuthSignIn, MEMBERS_DICT
-from .admin import get_members_dict, get_requests_df
+from oauth import app, db, OAuthSignIn, update_members_and_emails, MEMBERS_DICT
+from .admin import get_requests_df
 from .config import table_cols
 from .models import User, Strain, Request, Comment
 from .forms import StrainForm, RequestForm, StatusForm, VolunteerForm, \
     CommentForm
+from .email import notify_lab, email_comment, email_new_status, \
+    email_new_volunteer
 
 
 @app.route('/reload')
 def load_members_list():
-    global MEMBERS_DICT
     if current_user.is_authenticated and current_user.in_cgem:
-        MEMBERS_DICT = get_members_dict()
+        update_members_and_emails()
         n_members = len(MEMBERS_DICT)
-        msg = 'Members list updated. Currently {} members.'.format(n_members)
+        msg = 'Emails and members list updated ({} members).'.format(n_members)
         flash(msg, 'message')
         return render_template('reload.html')
     else:
@@ -81,6 +82,7 @@ def request_strain():
         db.session.commit()
         flash('Success! Your strain request has been placed. '
               'You will receive confirmation by email.', 'message')
+        notify_lab(rq)  # NOTIFY STRAIN LAB
         return redirect(url_for('my_requests'))
 
     return render_template("basic.html", title='Strain Request',
@@ -156,6 +158,7 @@ def show_request(request_id):
         rq.status = 'processing'
         db.session.add(rq)
         db.session.commit()
+        email_new_volunteer(rq)
         flash('Thanks for volunteering to handle this request!', 'message')
         meta['Shipper'] = rq.shipper.display_name
 
@@ -169,6 +172,7 @@ def show_request(request_id):
             rq.status = new_status
             db.session.add(rq)
             db.session.commit()
+            email_new_status(rq, current_user)
             flash('Status changed to {}.'.format(new_status), 'message')
         else:
             flash('Status unchanged: {}.'.format(new_status), 'message')
@@ -182,6 +186,7 @@ def show_request(request_id):
         db.session.add(comment)
         db.session.commit()
         flash('Thanks for your comment!', 'message')
+        email_comment(comment)
 
     return render_template("request_single.html", title='Current Requests',
                            meta=meta, rq=rq, strain_dict=strain_dict,

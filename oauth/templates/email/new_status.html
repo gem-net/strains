@@ -1,0 +1,12 @@
+{% extends 'email/email_base.html' %}
+
+{% block content %}
+    <p>There was a status change on <a href="{{ rq.url }}" target="_blank">request {{ rq.id }}</a> for plasmid ID {{ rq.strain.plasmid }}.</p>
+
+    <p>At {{ time }}UTC, {{ user.display_name }} updated the status to:</p>
+
+    <blockquote>{{ rq.status | upper }}</blockquote>
+
+    <p>Please go to <a href="{{ rq.url }}" target="_blank">{{ rq.url }}</a>
+    to respond, or otherwise act on this request.</p>
+{% endblock %}

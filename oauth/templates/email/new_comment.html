@@ -1,0 +1,12 @@
+{% extends 'email/email_base.html' %}
+
+{% block content %}
+    <p>There is a new comment from on <a href="{{ rq.url }}" target="_blank">request {{ rq.id }}</a> for plasmid ID {{ rq.strain.plasmid }}.</p>
+
+    <p>At {{ comment.creation_time }}UTC, {{ comment.commenter.display_name }} commented:</p>
+
+    <blockquote>"{{ comment.content }}"</blockquote>
+
+    <p>Please go to <a href="{{ rq.url }}" target="_blank">{{ rq.url }}</a>
+    to respond, or otherwise act on this request.</p>
+{% endblock %}

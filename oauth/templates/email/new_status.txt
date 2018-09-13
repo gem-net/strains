@@ -1,0 +1,12 @@
+{% extends 'email/email_base.html' %}
+
+{% block content %}
+There was a status change on request {{ rq.id }} for plasmid ID {{ rq.strain.plasmid }}.
+
+At {{ time }}UTC, {{ user.display_name }} updated the status to:
+
+    {{ rq.status | upper }}
+
+Please go to the following URL to respond, or otherwise act on this request:
+{{ rq.url }}
+{% endblock %}

@@ -41,8 +41,16 @@ class Config(object):
         os.environ.get('SQLALCHEMY_POOL_RECYCLE', 3600))
 
     SERVICE_ACCOUNT_FILE = os.environ.get('SERVICE_ACCOUNT_FILE')
+    CREDS_JSON = os.environ.get('CREDS_JSON')
     GROUP_KEY = os.environ.get('GROUP_KEY')
     SCOPES = ['https://www.googleapis.com/auth/admin.directory.group.member.readonly']
+
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_SENDER = os.environ.get('MAIL_SENDER')
 
 
 class DevelopmentConfig(Config):
