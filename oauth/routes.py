@@ -79,8 +79,7 @@ def request_strain():
         rq.preferred_email = form.email.data
         db.session.add(rq)
         db.session.commit()
-        flash('Success! Your strain request has been placed. '
-              'You will receive confirmation by email.', 'message')
+        flash('Success! Your strain request has been placed.', 'message')
         notify_lab(rq)  # NOTIFY STRAIN LAB
         return redirect(url_for('my_requests'))
 
