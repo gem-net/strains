@@ -20,8 +20,13 @@ class OAuthSignIn(object):
         pass
 
     def get_callback_url(self):
-        return url_for('oauth_callback', provider=self.provider_name,
+        callback_url = url_for('oauth_callback', provider=self.provider_name,
                        _external=True)
+        server_public = current_app.config['SERVER_PUBLIC']
+        if server_public:
+            server_local = current_app.config['SERVER_NAME']
+            callback_url = callback_url.replace(server_local, server_public)
+        return callback_url
 
     @classmethod
     def get_provider(self, provider_name):

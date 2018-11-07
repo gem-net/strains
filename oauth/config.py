@@ -26,6 +26,7 @@ class Config(object):
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
     APP_URL = os.environ.get('APP_URL')
     SERVER_NAME = os.environ.get('SERVER_NAME')
+    SERVER_PUBLIC = os.environ.get('SERVER_PUBLIC', None)
 
     OAUTH_CREDENTIALS = {
         'google': {
