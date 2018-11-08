@@ -34,14 +34,12 @@ def load_members_list():
 def index():
     if not (current_user.is_authenticated and current_user.in_cgem):
         return render_template("index.html", script=None, form=None)
-
     form = StrainForm()  # prefix='ship-'
     if form.validate_on_submit():
         # remember strain object in session, redirect to order form
         strain = [(col, getattr(form, col).data) for col in table_cols]
         session['strain'] = strain
         return redirect(url_for('request_strain'))
-
     # pull a new session from a running Bokeh server
     url = current_app.config['APP_URL']
     with bk_client.pull_session(url=url) as bk_session:

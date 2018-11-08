@@ -22,11 +22,12 @@ class OAuthSignIn(object):
     def get_callback_url(self):
         callback_url = url_for('oauth_callback', provider=self.provider_name,
                        _external=True)
-        server_public = current_app.config['SERVER_PUBLIC']
-        if server_public:
-            server_local = current_app.config['SERVER_NAME']
+        if 'X-Forwarded-Server' in request.headers:
+            server_local = request.headers['Host']
+            server_public = request.headers['X-Forwarded-Host']
             callback_url = callback_url.replace(server_local, server_public)
         return callback_url
+
 
     @classmethod
     def get_provider(self, provider_name):
