@@ -31,11 +31,11 @@ bar_bg_dict = {'color': 'whitesmoke', 'nonselection_color': 'whitesmoke',
 
 # select_cols = ['marker1', 'marker2', 'strain', 'origin', 'origin2', 'lab', 'submitter']  # organism
 LABS = ['Schepartz', 'Soll', 'Cate']  # TODO: remove hard-coded lab names
-PLOT_COLS = ['marker1', 'marker2', 'strain', 'origin', 'lab', 'submitter']  # organism, origin2
+PLOT_COLS = ['marker1', 'strain', 'origin', 'lab', 'submitter']  # @TODO(sgg): re-add 'marker2', organism, origin2
 LINK_COLS = 'benchling_url'
 LAB_COL = 'lab'
-FIG_WIDTH = 1200
-FIG_HEIGHT = 350
+FIG_WIDTH = 1000  # @TODO: was 1200
+FIG_HEIGHT = 300  # @TODO: was 350
 cell_template = """<span href="#" data-toggle="tooltip" title="<%= value %>"><%= value %></span>"""
 url_template = """<a href="<%= value %>" target="_blank"><%= value %></a>"""
 
@@ -47,7 +47,7 @@ col_dict = {
     'Entry #': 'entry',
     'Organism': 'organism',
     'Marker 1': 'marker1',
-    'Marker 2': 'marker2',
+    # 'Marker 2': 'marker2',  # @TODO(sgg): remove
     'Origin': 'origin',
     'Origin 2': 'origin2',
     'Plasmid': 'plasmid',
@@ -63,9 +63,9 @@ table_cols = OrderedDict([
     ('strain', {'width': 80}),
     ('plasmid', {'width': 165}),
     ('marker1', {'width': 55}),
-    ('marker2', {'width': 55}),
+    # ('marker2', {'width': 55}),  #@TODO(sgg): remove
     ('origin', {'width': 55}),
-    ('origin2', {'width': 45}),
+    # ('origin2', {'width': 45}),  #@TODO(sgg): remove
     ('promoter', {'width': 60}),
     ('benchling_url', {'width': 90}),
     ('desc', {'width': 320}),
@@ -152,7 +152,9 @@ def update_data_dict(data_dict=None, strains=None, write_orig=False):
     if write_orig:
         # Update all data
         data_dict['df'] = strains.copy()
+        data_dict['df'] = get_safe_data(data_dict['df'])  # @TODO(sgg): remove
         counts = counts_from_strains(strains)
+        counts = get_safe_data(counts, is_counts=True)  # @TODO(sgg): remove
         data_dict['counts'] = counts.copy()
         data_dict['pairs_df'] = counts[['categ', 'val']]
     else:
@@ -210,8 +212,31 @@ def initialize_counts_fig(counts):
     return p, source_c, source_c_orig
 
 
+def get_safe_data(d, is_counts=False):
+    """Strip data-frame down to commercial strains, or tidy variables for count plot.
+
+    Args:
+        d (pandas.DataFrame):
+        is_counts (bool): True for counts data else False for current data.
+    """
+    import re
+    if not is_counts:
+        d = d[d.desc.str.lower().apply(lambda v: bool(re.findall('(?:dnasu|sando|invitrogen)', v)))]
+        return d
+    else:
+        ok_strains = ['All', 'Top10', 'DH5a', 'C321', 'Mach1', 'DH10B', 'B95.deltaA', 'Top12', 'C321_M9']
+        ok_origin = ['All', 'pBR322', 'ColE1', 'pMB1', 'CloDF13', 'p15a', 'N/A']
+        ok_marker1 = ['All', 'Cb', 'Sp', 'Km', 'Tet', 'Cm']
+        d = d.loc[~((d.categ == 'strain') & (~d.val.isin(ok_strains)))].copy()
+        d = d.loc[~((d.categ == 'origin') & (~d.val.isin(ok_origin)))].copy()
+        d = d.loc[~((d.categ == 'marker1') & (~d.val.isin(ok_marker1)))].copy()
+        return d
+
+
 df = load_df(load_gsheet=False)
 data_dict = {}
+
+# df = get_safe_data(df, is_counts=False)  # @TODO(sgg): remove this.
 update_data_dict(data_dict=data_dict, strains=df, write_orig=True)
 
 source_s = ColumnDataSource(data=dict())  # strain data
@@ -244,9 +269,11 @@ text_refresh = Div(text=get_refresh_msg())
 
 # UPDATES
 
+
 def update_sources(data_dict, update_orig=False):
     """Update strains data source, infer+update counts source."""
     current = data_dict['current']
+    current = get_safe_data(current, is_counts=False)  # @TODO(sgg): remove me.
     new_dict = {col: list(current[col].replace('<blank>', ''))
                 for col in current.columns}
     source_s.data = new_dict
