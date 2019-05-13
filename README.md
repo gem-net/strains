@@ -1,5 +1,7 @@
 # The C-GEM Strains app
 
+![The Strains dashboard](strains_dashboard.png)
+
 This app consists of two sub-apps which must run simultaneously:
 - a Bokeh server app, with code in `bk_server`;
 - a Flask app, with code in `oauth`.
