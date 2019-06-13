@@ -1,7 +1,7 @@
 """bokeh serve try_server.py"""
 import os
 from collections import OrderedDict
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 import pandas as pd
 import gspread
@@ -17,7 +17,7 @@ from bokeh.layouts import row, widgetbox, column
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '.env'))
+load_dotenv(find_dotenv())
 CREDS_JSON = os.environ.get('CREDS_JSON')
 FEATHER_PATH = os.environ.get('FEATHER_PATH') or 'df.feather'
 

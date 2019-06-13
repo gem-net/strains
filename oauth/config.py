@@ -1,9 +1,9 @@
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from collections import OrderedDict
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '.env'))
+load_dotenv(find_dotenv())
 
 table_cols = OrderedDict([
     ('lab', {'width': 70}),
