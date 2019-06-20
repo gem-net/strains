@@ -36,17 +36,19 @@ your server. A demo file (`.env.demo`) has been provided, which you should
 update and rename to `.env`. 
 
 This file is used to specify:
+- your flask environment (i.e. 'development', 'testing', or 'production')
 - the location of your python virtual environment (full path to directory that
 includes the bin/ and lib/ subdirectories).
-- the URL where the app will be served
-- the server address (e.g. localhost or 127.0.0.1)
+- the URL where the app will be made available (could be 'localhost')
+- the server address (e.g. 'localhost' or IP address)
 - port numbers for running the Bokeh server and Flask app
 - a location for saving a local copy of downloaded strains data
 - the path to a GSuite credentials file, in JSON format. The corresponding user 
-must have read permission on the corresponding Strains sheet in Team Drive
-- google service account credential information
-- a local URL for the bokeh server
+must have read permission on the corresponding Strains sheet in Team Drive.
+- a username for service account authorization
+- the local URL for the bokeh server
 - development and production database details
+- the id ('group key') for the Team Drive, used by the Directory API
 - mail server configuration for user alerts
 
 
