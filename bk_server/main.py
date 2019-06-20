@@ -32,7 +32,7 @@ bar_bg_dict = {'color': 'whitesmoke', 'nonselection_color': 'whitesmoke',
 
 # select_cols = ['marker1', 'marker2', 'strain', 'origin', 'origin2', 'lab', 'submitter']  # organism
 LABS = ['Schepartz', 'Soll', 'Cate']  # TODO: remove hard-coded lab names
-PLOT_COLS = ['marker1', 'marker2', 'strain', 'origin', 'lab', 'submitter']  # organism, origin2
+PLOT_COLS = ['marker1', 'strain', 'origin', 'lab', 'submitter']  # organism, origin2, marker2
 LINK_COLS = 'benchling_url'
 LAB_COL = 'lab'
 FIG_WIDTH = 1200
@@ -103,7 +103,8 @@ def load_df(load_gsheet=False):
         vals = sheet.get_all_records()
         # headers_lists.append(sheet.row_values(1))
         # print('headers: %s' % headers)
-        temp_df = pd.DataFrame(vals)
+        vals = [i for i in vals if set(i.values()) != {''}]  # remove empty rows
+        temp_df = pd.DataFrame(vals, dtype=str)
         temp_df.insert(0, 'Lab', lab)
         df_list.append(temp_df)
     # GET FULL COLUMN SET (in case not exact duplicates)
