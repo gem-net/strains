@@ -17,7 +17,8 @@ from bokeh.layouts import row, widgetbox, column
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(find_dotenv())
+env_path = os.getenv('ENV_NAME', find_dotenv())
+load_dotenv(env_path)
 CREDS_JSON = os.environ.get('CREDS_JSON')
 FEATHER_PATH = os.environ.get('FEATHER_PATH') or 'df.feather'
 
@@ -243,6 +244,7 @@ text_refresh = Div(text=get_refresh_msg())
 # """, width=FIG_WIDTH)
 
 # UPDATES
+
 
 def update_sources(data_dict, update_orig=False):
     """Update strains data source, infer+update counts source."""
