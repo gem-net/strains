@@ -8,13 +8,13 @@ from googleapiclient.discovery import build
 
 def get_members_dict():
     """Get dictionary of {google_id: email_address}."""
-    SERVICE_ACCOUNT_FILE = current_app.config['SERVICE_ACCOUNT_FILE']
+    CREDS_JSON = current_app.config['CREDS_JSON']
     GROUP_KEY = current_app.config['GROUP_KEY']
     SCOPES = current_app.config['SCOPES']
 
     credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    delegated_credentials = credentials.with_subject('stephen@gem-net.net')
+        CREDS_JSON, scopes=SCOPES)
+    delegated_credentials = credentials.with_subject(current_app.config['SERVICE_USER'])
 
     # GET: https://www.googleapis.com/admin/directory/v1/groups/04i7ojhp13c8l10/members
     service = build('admin', 'directory_v1', credentials=delegated_credentials)
