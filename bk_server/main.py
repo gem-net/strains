@@ -328,9 +328,9 @@ source_s.selected.js_on_change('indices', CustomJS(
     }
     """))
 
+
 # LAYOUT
-table = widgetbox(data_table)
-table_row = row(table, sizing_mode="scale_width")  # (inputs, table)
+table_row = row(data_table, sizing_mode="scale_width")  # (inputs, table)
 refresh_row = row(button_refresh, text_refresh)
 full = column(p_counts, table_row, refresh_row,
               sizing_mode="scale_width")  # widgetbox(text_div)
