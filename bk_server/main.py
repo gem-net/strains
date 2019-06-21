@@ -282,8 +282,15 @@ def plot_select(data_dict):
     inds = list(source_c.selected.indices)
     current = data_dict['df']  # full strains list, for filtering
     if inds:
+        # FILTER DATA BASED ON SELECTED INDICES IN COUNTS PLOT
         # prog_list.append('no inds')
-        s = pd.Series(source_c.data['categ_val']).iloc[inds]
+        s = source_c.data['categ_val'][inds]  # array of (categ, val) tuples
+        categs, vals = zip(*s)
+        sd = pd.DataFrame({'categ': categs, 'val': vals})
+        sd = sd[sd.val != 'All']  # ignore 'All' selections.
+        filter_dict = sd.groupby('categ')['val'].apply(set).to_dict()
+        for categ in filter_dict:
+            current = current[current[categ].isin(filter_dict[categ])]
         # prog_list.append(str(s))
         # text_div.text = '; '.join([str((categ, val)) for categ, val in s])
         # prog_list.append('updated text_div')
