@@ -29,13 +29,17 @@ conda env create -n strains -f environment.lock.yaml
 ```
 
 
-### env file
+### Environment file
 
 A single environment file (.env) is used to specify all variables specific to 
 your server. A demo file (`.env.demo`) has been provided, which you should 
-update and rename to `.env`. 
+update and rename to `.env`. If you wish to keep multiple env files to define
+different setups (e.g. a development environment), this is also possible by 
+setting the ENV_NAME environment variable -- e.g. `export ENV_NAME=.env.dev` will
+cause the bokeh server and flask app to use the configuration in a file called 
+`.env.dev` in the root source directory. 
 
-This file is used to specify:
+The environment file is used to specify:
 - your flask environment (i.e. 'development', 'testing', or 'production')
 - the location of your python virtual environment (full path to directory that
 includes the bin/ and lib/ subdirectories).
@@ -62,6 +66,9 @@ created the database using the credentials you provided in the env file.
 
 
 ### Running the apps
+
+If you are using a custom environment file (as described above), remember to 
+set the `ENV_NAME` environment variable prior to starting the apps.
 
 The Bokeh server app should be started first, and can be initiated by running 
 the `start_strains_bokeh.sh` script. This sets up the environment and runs 
