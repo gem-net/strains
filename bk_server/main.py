@@ -303,7 +303,7 @@ def plot_select(data_dict):
     update_sources(data_dict)
 
 
-source_c.on_change('selected', lambda attr, old, new: plot_select(data_dict))
+source_c.selected.on_change('indices', lambda attr, old, new: plot_select(data_dict))
 button_refresh.on_click(lambda: refresh_data(data_dict))
 update_sources(data_dict)
 
