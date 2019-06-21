@@ -23,8 +23,8 @@ Data are arranged in the following structures:
 - source_s: the ColumnDataSource holding data for data_table.
 - button_refresh: a refresh button widget that will reload from Google Sheets.
 - text_refresh: a text widget that shows data loading status.
-
 """
+
 import os
 from collections import OrderedDict
 from dotenv import load_dotenv, find_dotenv
