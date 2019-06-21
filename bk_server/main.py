@@ -1,4 +1,30 @@
-"""bokeh serve try_server.py"""
+"""This module constructs the Bokeh document of interactive plots and widgets.
+
+The code sets up 'roots' (layout objects) to be added to curdoc(), which can
+then be turned into div and script elements by the bokeh server. These elements
+are embedded in the accompanying Flask app.
+
+Data are arranged in the following structures:
+
+1) A dictionary of pandas dataframes.
+- df: the full strains dataframe, built from imported Google Sheets data.
+- current: the subset of df that remains after filtering (via plot selection)
+- counts: a 'counts' dataframe with columns ['categ', 'val', 'n']. Provides
+    the number of rows in df where column 'categ' has value 'val'.
+- pairs_df: dataframe with columns ['categ', 'val']. Has one row for each
+    value ('val') observed in each column ('categ').
+
+2) Bokeh objects.
+- p_counts: the interactive counts barplot.
+- source_c: the data source (ColumnDataSource) underlying p_counts.
+- source_c_orig: the pre-filtered data source for p_counts, for showing
+    persistent gray bars that represent counts in the full strains data.
+- data_table: the interactive, sortable table of (filtered) strains data.
+- source_s: the ColumnDataSource holding data for data_table.
+- button_refresh: a refresh button widget that will reload from Google Sheets.
+- text_refresh: a text widget that shows data loading status.
+
+"""
 import os
 from collections import OrderedDict
 from dotenv import load_dotenv, find_dotenv
@@ -165,22 +191,14 @@ def update_data_dict(data_dict=None, strains=None, write_orig=False):
 
 
 def get_refresh_msg():
+    """Get modification time message to accompany refresh button."""
     modtime = pd.datetime.utcfromtimestamp(os.path.getmtime(FEATHER_PATH))
     modtime_str = modtime.strftime('%Y-%m-%d %H:%M:%S')
     return 'Spreadsheet last loaded at {} UTC.'.format(modtime_str)
 
 
-def get_dropdown_vals(s):
-    vc = s.value_counts()
-    vals = ['{} ({})'.format(i[0], i[1]) for i in vc.iteritems()]
-    n_total = len(s)
-    if len(vc) >= 2:
-        vals.insert(0, 'All ({})'.format(n_total))
-    return vals
-
-
 def initialize_counts_fig(counts):
-    """Create bar plot """
+    """Create bar plot from counts dataframe."""
     group = counts.groupby(['categ', 'val'])
     counts_x = [(i.categ, i.val) for ind, i in counts[['categ', 'val']].iterrows()]  # for xrange
 
@@ -231,21 +249,8 @@ data_table = DataTable(source=source_s, columns=columns, width=FIG_WIDTH)
 button_refresh = Button(label="Refresh data", button_type="warning")
 text_refresh = Div(text=get_refresh_msg())
 
-# text_div = Div(text="""<h1>Strains Dashboard</h1>
-#
-# <ul>
-# <li>Full data set in
-# <a href="https://docs.google.com/spreadsheets/d/1PRU1PgIIIDMZunnrHlncGT249vfheckuZxge0lVocf8/edit#gid=1804776083" target="_blank">
-# Google Sheets</a>.</li>
-# <li>Click on any bar below to filter the data table. Shift-click to select multiple attributes.
-# Click in whitespace to undo the selection.</li>
-# <li>Table columns are sortable. Click column headers to re-order.</li>
-# </ul>
-#
-# """, width=FIG_WIDTH)
 
 # UPDATES
-
 
 def update_sources(data_dict, update_orig=False):
     """Update strains data source, infer+update counts source."""
@@ -264,6 +269,7 @@ def update_sources(data_dict, update_orig=False):
 
 
 def refresh_data(data_dict):
+    """Data refresh button response: fetch new data from gsheet, update page."""
     text_refresh.text = 'Loading...'
     df = load_df(load_gsheet=True)
     text_refresh.text = get_refresh_msg()
