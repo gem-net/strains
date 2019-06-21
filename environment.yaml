@@ -1,0 +1,24 @@
+name: strains
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.6
+  - bokeh
+  - feather-format
+  - flask
+  - flask-bootstrap
+  - flask-login
+  - flask-mail
+  - flask-sqlalchemy
+  - flask-wtf
+  - google-api-python-client
+  - google-auth
+  - oauth2client
+  - rauth
+  - pandas
+  - pymysql
+  - python-dotenv
+  - pip:
+    - gspread
+    - mod-wsgi
