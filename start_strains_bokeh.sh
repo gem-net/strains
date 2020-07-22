@@ -11,7 +11,7 @@ PORT_BOKEH=${PORT_BOKEH:-5101}
 
 ${PY_HOME}/bin/bokeh serve --port ${PORT_BOKEH} \
  --allow-websocket-origin=${URL} \
- --allow-websocket-origin=localhost:${PORT_APP} \
+ --allow-websocket-origin=localhost:${FLASK_RUN_PORT} \
  --allow-websocket-origin=localhost:${PORT_BOKEH} \
  --address ${ADDRESS} \
  --show ${ROOT_DIR}/bk_server

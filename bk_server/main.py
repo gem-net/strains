@@ -26,6 +26,7 @@ Data are arranged in the following structures:
 """
 
 import os
+import datetime as dt
 from collections import OrderedDict
 from dotenv import load_dotenv, find_dotenv
 
@@ -79,7 +80,7 @@ col_dict = {
     'Origin 2': 'origin2',
     'Plasmid': 'plasmid',
     'Promoter': 'promoter',
-    'Strain': 'strain'
+    'Strain': 'strain',
 }
 col_dict_r = {col_dict[i]: i for i in col_dict}
 
@@ -192,7 +193,7 @@ def update_data_dict(data_dict=None, strains=None, write_orig=False):
 
 def get_refresh_msg():
     """Get modification time message to accompany refresh button."""
-    modtime = pd.datetime.utcfromtimestamp(os.path.getmtime(FEATHER_PATH))
+    modtime = dt.datetime.utcfromtimestamp(os.path.getmtime(FEATHER_PATH))
     modtime_str = modtime.strftime('%Y-%m-%d %H:%M:%S')
     return 'Spreadsheet last loaded at {} UTC.'.format(modtime_str)
 
@@ -309,9 +310,7 @@ update_sources(data_dict)
 
 source_s.selected.js_on_change('indices', CustomJS(
     args=dict(source=source_s, col_names=list(table_cols)), code="""
-    temp_source = source;
-    console.log(cb_obj);
-    var inds = source.selected['1d']['indices'];
+    var inds = cb_obj.indices;
     if (inds.length == 1){
         /* update form with data from selected row */
         var use_ind = inds[0]

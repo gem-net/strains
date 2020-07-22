@@ -14,7 +14,10 @@ rest of the application interface and responds to HTTP requests.
 
 ### Python package dependencies
 
-The code in this repository assumes a Python 3 environment.
+The code in this repository assumes a Python 3 environment. You can use either 
+`conda` or `pip` as described below.
+
+#### Dependencies via `conda`
 
 You can replicate the environment used to run the C-GEM Strains app by using conda
 to install the virtual environment specified by the supplied environment file, 
@@ -26,6 +29,15 @@ follows:
 
 ```bash
 conda env create -n strains -f environment.lock.yaml
+```
+
+Activate the environment using `conda activate strains`.
+
+#### Dependencies via `pip`
+
+As an alternative to conda, you can use pip to install dependencies, using:
+```bash
+pip install -r requirements.txt
 ```
 
 
