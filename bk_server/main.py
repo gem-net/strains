@@ -58,7 +58,7 @@ bar_bg_dict = {'color': 'whitesmoke', 'nonselection_color': 'whitesmoke',
 #     'line_color': '#1f77b4'}
 
 # select_cols = ['marker1', 'marker2', 'strain', 'origin', 'origin2', 'lab', 'submitter']  # organism
-LABS = ['Schepartz', 'Soll', 'Cate']  # TODO: remove hard-coded lab names
+LABS = ['Francis', 'Schepartz', 'Soll', 'Cate', 'Chatterjee']  # TODO: remove hard-coded lab names
 PLOT_COLS = ['marker1', 'strain', 'origin', 'lab', 'submitter']  # organism, origin2, marker2
 LINK_COLS = 'benchling_url'
 LAB_COL = 'lab'
